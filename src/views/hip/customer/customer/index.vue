@@ -158,7 +158,7 @@
             icon="el-icon-setting"
             @click="handleNav(scope.row)"
             v-hasPermi="['customer:customer:edit']"
-          >导航面板</el-button>
+          >客户信息</el-button>
           <el-button
             size="mini"
             type="text"
@@ -333,7 +333,27 @@
       </div>
     </el-dialog>
     <!-- 添加或修改新建客户对话框 -->
-    <el-dialog title="导航面板" :visible.sync="openNav" width="700px" class="nav-el-dialog" append-to-body>
+    <el-dialog  :visible.sync="openNav" width="700px" class="nav-el-dialog" append-to-body>
+      <el-row :gutter="0" class="col-nav">
+        <el-col :span="8">
+          <div class="nav-container" @click="openContacts">
+            <i  class="el-icon-s-custom"></i>
+            <span>联系人</span>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="nav-container" @click="openContract">
+            <i  class="el-icon-s-management"></i>
+            <span>合同订单</span>
+          </div>
+        </el-col>
+        <el-col :span="8"> 
+          <div class="nav-container">
+            <i  class="el-icon-s-finance"></i>
+            <span>报价单</span>
+          </div>
+        </el-col>
+      </el-row>
       <el-descriptions class="desc-margin-bottom"  :column="2"  border>
         <el-descriptions-item>
           <template slot="label">
@@ -357,33 +377,13 @@
           {{openRow.address}}
         </el-descriptions-item>
       </el-descriptions>
-      <el-row :gutter="0" class="col-nav">
-        <el-col :span="8">
-          <div class="nav-container" @click="openContacts">
-            <i  class="el-icon-s-custom"></i>
-            <span>联系人</span>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="nav-container" @click="openContract">
-            <i  class="el-icon-s-management"></i>
-            <span>合同订单</span>
-          </div>
-        </el-col>
-        <el-col :span="8"> 
-          <div class="nav-container">
-            <i  class="el-icon-s-finance"></i>
-            <span>报价单</span>
-          </div>
-        </el-col>
-      </el-row>
     </el-dialog>
   </div>
 </template>
 <style lang="scss" scoped>
 
 .desc-margin-bottom {
-  margin-bottom: 20px;
+  margin-top: 20px;
 }
 .col-nav {
   margin: 0 10px;
