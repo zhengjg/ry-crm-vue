@@ -165,15 +165,36 @@
           <el-input v-model="form.currentNode" value="1" placeholder="请输入当前节点" />
         </el-form-item>
         <el-divider content-position="center">产品信息</el-divider>
-        <el-row :gutter="10" class="mb8">
+        <!--<el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
             <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddHipContractOrder">添加</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteHipContractOrder">删除</el-button>
           </el-col>
+        </el-row>-->
+        <el-row :gutter="10" class="mb8">
+          <el-col :span="1.5">
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleSelectProduct">选择产品</el-button>
+          </el-col>
+          <el-col :span="1.5" v-show="hipContractOrderList.length >0">
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteHipContractOrder">删除</el-button>
+          </el-col>
         </el-row>
-        <el-table :data="hipContractOrderList" :row-class-name="rowHipContractOrderIndex" @selection-change="handleHipContractOrderSelectionChange" ref="hipContractOrder">
+        <el-table :data="hipContractOrderList" show-summary :summary-method="getSummaries" :row-class-name="rowHipContractOrderIndex" @selection-change="handleHipContractOrderSelectionChange" ref="hipContractOrder">
+          <el-table-column type="selection" width="80" align="center" />
+          <el-table-column label="序号" align="center" prop="index" width="50"/>
+          <el-table-column label="产品名称" prop="prodctName" width="150" />
+          <el-table-column label="型号" prop="model" width="150"/>
+          <el-table-column label="容量" prop="capacity" width="150" />
+          <el-table-column label="类别" prop="category" width="150" />
+          <el-table-column label="品牌" prop="brand" width="150" />
+          <el-table-column label="状态" prop="status" width="150" />
+          <el-table-column label="单价" sortable prop="unitPrice" fixed="right" width="130" />
+          <el-table-column label="数量" sortable prop="quantity" fixed="right" width="130" />
+          <el-table-column label="金额" sortable prop="amountMoney" fixed="right" width="130" />
+        </el-table>
+       <!-- <el-table :data="hipContractOrderList" :row-class-name="rowHipContractOrderIndex" @selection-change="handleHipContractOrderSelectionChange" ref="hipContractOrder">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column label="序号" align="center" prop="index" width="50"/>
           <el-table-column label="产品名称" prop="prodctName" width="150">
@@ -208,27 +229,112 @@
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column label="单价" prop="unitPrice" width="150">
+          <el-table-column label="单价" prop="unitPrice" fixed="right" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.unitPrice" placeholder="请输入单价" />
             </template>
           </el-table-column>
-          <el-table-column label="数量" prop="quantity" width="150">
+          <el-table-column label="数量" prop="quantity" fixed="right" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.quantity" placeholder="请输入数量" />
             </template>
           </el-table-column>
-          <el-table-column label="金额" prop="amountMoney" width="150">
+          <el-table-column label="金额" prop="amountMoney" fixed="right" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.amountMoney" placeholder="请输入金额" />
             </template>
           </el-table-column>
-        </el-table>
+        </el-table>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
+    </el-dialog>
+    <!--选择产品-->
+    <el-dialog title="选择产品" :visible.sync="openProduct" width="1000px" append-to-body>
+      <el-form :model="productParams" ref="queryProductForm" size="big" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form-item label="产品编号" prop="productNo">
+          <el-input
+            v-model="productParams.productNo"
+            placeholder="请输入产品编号"
+            clearable
+            @keyup.enter.native="handlePruductQuery"
+          />
+        </el-form-item>
+        <el-form-item label="产品名称" prop="name">
+          <el-input
+            v-model="productParams.name"
+            placeholder="请输入产品名称"
+            clearable
+            @keyup.enter.native="handlePruductQuery"
+          />
+        </el-form-item>
+        <el-form-item label="型号" prop="model">
+          <el-input
+            v-model="productParams.model"
+            placeholder="请输入型号"
+            clearable
+            @keyup.enter.native="handlePruductQuery"
+          />
+        </el-form-item>
+        <el-form-item label="产品类别" prop="productType">
+          <el-input
+            v-model="productParams.productType"
+            placeholder="请输入产品类别"
+            clearable
+            @keyup.enter.native="handlePruductQuery"
+          />
+        </el-form-item>
+        <el-form-item label="品牌" prop="brand">
+          <el-input
+            v-model="productParams.brand"
+            placeholder="请输入品牌"
+            clearable
+            @keyup.enter.native="handlePruductQuery"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="handlePruductQuery">搜索</el-button>
+          <el-button icon="el-icon-refresh" size="mini" @click="resetProductQuery">重置</el-button>
+          <el-button type="primary" icon="el-icon-circle-plus" size="mini" @click="handleSelectPruducts">确认选择</el-button>
+        </el-form-item>
+      </el-form>
+      <el-table v-loading="productLoading" :data="productList" @selection-change="handleProductSelectionChange">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="产品ID" align="center" prop="productId" />
+        <el-table-column label="所属部门" align="center" prop="sysOrgCode" />
+        <el-table-column label="产品编号" align="center" prop="productNo" />
+        <el-table-column label="产品名称" align="center" prop="name" />
+        <el-table-column label="型号" align="center" prop="model" />
+        <el-table-column label="单位组" align="center" prop="unitGroup" />
+        <el-table-column label="单位" align="center" prop="unit" />
+        <el-table-column label="产品类别" align="center" prop="productType" />
+        <el-table-column label="产品属性" align="center" prop="productProperty" />
+        <el-table-column label="品牌" align="center" prop="brand" />
+        <el-table-column label="产品说明" align="center" prop="specification" />
+        <el-table-column label="封装形式" align="center" prop="packageType" />
+        <el-table-column label="产品图片" align="center" prop="img" />
+        <el-table-column label="产地" align="center" prop="placeOrigin" />
+        <el-table-column label="参考价" align="center" prop="referPrice" />
+        <el-table-column label="最低价" align="center" prop="lowPrice" />
+        <el-table-column label="库存数量" align="center" prop="quantity" fixed="right"/>
+        <el-table-column label="添加数量" align="center" prop="num" fixed="right" width="130">
+          <template slot-scope="scope">
+            <el-input-number style="width: 120px;" v-model="scope.row.num" controls-position="right" @change="validateNum" :min="0" :max="scope.row.quantity" :precision="2"></el-input-number>
+          </template>
+        </el-table-column>
+        <el-table-column label="价钱" align="center" prop="price" fixed="right" width="130">
+          <template slot-scope="scope">
+            <el-input-number style="width: 120px;" v-model="scope.row.price" controls-position="right" :min="0" />
+          </template>
+        </el-table-column>
+        <el-table-column label="总金额" align="center" prop="amountMoney" fixed="right" width="110">
+          <template slot-scope="scope">
+            <el-input disabled :value="scope.row.num*scope.row.price?scope.row.num*scope.row.price:null" />
+          </template>
+        </el-table-column>
+      </el-table>
     </el-dialog>
   </div>
 </template>
@@ -236,6 +342,7 @@
 <script>
 import store from "@/store";
 import { listContract, getContract, delContract, addContract, updateContract, getContractNo, getSignAddressList } from "@/api/customer/contract";
+import { listProduct } from "@/api/product/product";
 
 export default {
   name: "Contract",
@@ -243,8 +350,10 @@ export default {
     return {
       // 遮罩层
       loading: true,
+      productLoading: false,
       // 选中数组
       ids: [],
+      selectProducts: [],
       // 子表选中数据
       checkedHipContractOrder: [],
       // 非单个禁用
@@ -263,6 +372,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      openProduct: false,
       signAddressList:[],
       // 查询参数
       queryParams: {
@@ -274,6 +384,16 @@ export default {
         settlementType: null,
         flowId: null,
         customerName: null,
+      },
+      productList:[],
+      productParams:{
+        pageNum: 1,
+        pageSize: 10,
+        productNo: null,
+        name: null,
+        model: null,
+        productType: null,
+        brand: null,
       },
       // 表单参数
       form: {},
@@ -301,13 +421,11 @@ export default {
   methods: {
     // 查询供应方 
     getSignAddressList() {
-
       getSignAddressList().then(response => {
         if(response.code == 200) {
           this.signAddressList = response.data;
         }
       });
-
     },
     /** 查询合同列表 */
     getList() {
@@ -317,6 +435,98 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    getProductList() {
+      this.productLoading = true;
+      listProduct(this.queryProductForm).then(response => {
+        this.productList = response.rows;
+        this.total = response.total;
+        this.productLoading = false;
+      }).catch(()=>{
+        this.productLoading = false;
+      });
+    },
+    getSummaries(param) {
+      const { columns, data } = param;
+        const sums = [];
+        columns.forEach((column, index) => {
+          if (index === 0) {
+            sums[index] = '合计';
+            return;
+          }
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            if(index > 7) {
+              sums[index] = values.reduce((prev, curr) => {
+                const value = Number(curr);
+                if (!isNaN(value)) {
+                  return prev + curr;
+                } else {
+                  return prev;
+                }
+              }, 0);
+            } else {
+              sums[index] = ' ';
+            }
+          } else {
+            sums[index] = ' ';
+          }
+        });
+        return sums;
+
+    },
+    /** 搜索产品按钮操作 */
+    handlePruductQuery() {
+      this.productParams.pageNum = 1;
+      this.getProductList();
+    },
+    /** 产品重置按钮操作 */
+    resetProductQuery() {
+      this.resetForm("queryForm");
+      this.handlePruductQuery();
+    },
+    handleSelectPruducts() {
+      if(this.selectProducts.length >0) {
+        const isFullInput = this.selectProducts.every((row)=>{
+          return row.num && row.price
+        })
+        if(isFullInput) {
+          console.log('niu')
+          this.selectProducts.forEach((element) => {
+            let obj = {};
+            obj.prodctName = element.name;
+            obj.model = element.model;
+            obj.capacity = "";
+            obj.category = "";
+            obj.brand = element.brand;
+            obj.status = "";
+            obj.unitPrice = element.price;
+            obj.quantity = element.num;
+            obj.amountMoney = element.price * element.num;
+            obj.remarks = "";
+            this.hipContractOrderList.push(obj);
+          });
+          this.openProduct = false;
+
+        }else {
+          this.$message({
+            message: '请输入产品的数量和价格',
+            type: 'warning'
+          });
+        }
+
+      } else {
+        this.$message({
+          message: '请选选择产品',
+          type: 'warning'
+        });
+      }
+     
+
+    },
+    validateNum(value) {
+      console.log(value)
+
     },
     // 取消按钮
     cancel() {
@@ -356,7 +566,7 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
+      this.resetForm("queryProductForm");
       this.handleQuery();
     },
     // 多选框选中数据
@@ -364,6 +574,11 @@ export default {
       this.ids = selection.map(item => item.contractId)
       this.single = selection.length!==1
       this.multiple = !selection.length
+    },
+     // 产品多选框选中数据
+     handleProductSelectionChange(selection) {
+      console.log("products",selection)
+      this.selectProducts = selection;
     },
     /** 新增按钮操作 */
     async handleAdd () {
@@ -452,6 +667,11 @@ export default {
     /** 复选框选中数据 */
     handleHipContractOrderSelectionChange(selection) {
       this.checkedHipContractOrder = selection.map(item => item.index)
+    },
+    /** 选择产品*/
+    handleSelectProduct() {
+      this.openProduct = true;
+      this.getProductList();
     },
     /** 导出按钮操作 */
     handleExport() {
