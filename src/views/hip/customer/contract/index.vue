@@ -126,14 +126,26 @@
     <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="合同编号" prop="contractNo">
-          <el-input v-model="form.contractNo" placeholder="请输入合同编号" />
+          <el-input v-model="form.contractNo" :disabled="!!form.contractNo" placeholder="请输入合同编号" />
         </el-form-item>
-        <el-form-item label="签署地点" prop="signAddress">
-          <el-input v-model="form.signAddress" placeholder="请输入签署地点" />
+        <el-form-item label="供应方" prop="signAddress">
+         <!-- <el-input v-model="form.signAddress" placeholder="请输入签署地点" />-->
+          <el-select v-model="form.signAddress" style="width: 100%;" clearable placeholder="请选择">
+            <el-option
+              v-for="item in signAddressList"
+              :key="item.deptName"
+              :label="item.deptName"
+              :value="item.deptName">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="客户Id" prop="customerId">
+
+        <el-form-item label="客户名称" prop="customerName">
+          <el-input v-model="form.customerName" :disabled="!!customerName" placeholder="请输入客户名称" />
+        </el-form-item>
+        <!--<el-form-item label="客户Id" prop="customerId">
           <el-input v-model="form.customerId" placeholder="请输入客户Id" />
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item label="收货地址" prop="deliveryAddress">
           <el-input v-model="form.deliveryAddress" placeholder="请输入收货地址" />
         </el-form-item>
@@ -146,14 +158,11 @@
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="流程号" prop="flowId">
-          <el-input v-model="form.flowId" placeholder="请输入流程号" />
+        <el-form-item label="流程号" prop="flowId" style="display: none;">
+          <el-input v-model="form.flowId" value="2" placeholder="请输入流程号" />
         </el-form-item>
-        <el-form-item label="当前节点" prop="currentNode">
-          <el-input v-model="form.currentNode" placeholder="请输入当前节点" />
-        </el-form-item>
-        <el-form-item label="客户名称" prop="customerName">
-          <el-input v-model="form.customerName" placeholder="请输入客户名称" />
+        <el-form-item label="当前节点" prop="currentNode" style="display: none;">
+          <el-input v-model="form.currentNode" value="1" placeholder="请输入当前节点" />
         </el-form-item>
         <el-divider content-position="center">产品信息</el-divider>
         <el-row :gutter="10" class="mb8">
@@ -225,7 +234,8 @@
 </template>
 
 <script>
-import { listContract, getContract, delContract, addContract, updateContract } from "@/api/customer/contract";
+import store from "@/store";
+import { listContract, getContract, delContract, addContract, updateContract, getContractNo, getSignAddressList } from "@/api/customer/contract";
 
 export default {
   name: "Contract",
@@ -253,6 +263,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      signAddressList:[],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -271,10 +282,33 @@ export default {
       }
     };
   },
+  computed: {
+    currentCustomer() {
+      return store.getters.currentCustomer;
+    },
+    customerName() {
+      return store.getters.currentCustomer.name;
+    }
+
+  },
   created() {
+    if(this.currentCustomer && this.currentCustomer.name) {
+      this.queryParams.customerName = this.currentCustomer.name;
+    }
     this.getList();
+    this.getSignAddressList();
   },
   methods: {
+    // 查询供应方 
+    getSignAddressList() {
+
+      getSignAddressList().then(response => {
+        if(response.code == 200) {
+          this.signAddressList = response.data;
+        }
+      });
+
+    },
     /** 查询合同列表 */
     getList() {
       this.loading = true;
@@ -332,10 +366,15 @@ export default {
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
-    handleAdd() {
+    async handleAdd () {
       this.reset();
       this.open = true;
       this.title = "添加合同";
+      this.form.customerName = this.customerName;
+      const no = await getContractNo();
+      if(no) {
+        this.form.contractNo = no;
+      }      
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

@@ -42,3 +42,22 @@ export function delContract(contractId) {
     method: 'delete'
   })
 }
+
+// 获得序列号
+export function getContractNo() {
+  return request({
+    url: '/rule/HT',
+    method: 'get'
+  })
+}
+
+// 获取供应方列表
+export function getSignAddressList() {
+  return request({
+    url: '/system/dept/list/all',
+    method: 'get'
+  })
+}
+
+
+
