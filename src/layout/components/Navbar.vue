@@ -23,12 +23,12 @@
           </router-link>
         </el-menu-item>
         <el-menu-item index="4">
-          <router-link to="/hip/customer/contract">
+          <router-link to="/hip/sales/quotation">
             销售出货
           </router-link>
         </el-menu-item>
         <el-menu-item index="5">
-          <router-link to="/hip/customer/contract">
+          <router-link to="/hip/finance/receivable">
             应收账款
           </router-link>
         </el-menu-item>
