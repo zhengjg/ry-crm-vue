@@ -152,13 +152,13 @@
       <el-table-column label="业务员" align="center" prop="salesMan" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
-          <el-button
+          <!--<el-button
             size="mini"
             type="text"
             icon="el-icon-setting"
             @click="handleNav(scope.row)"
             v-hasPermi="['customer:customer:edit']"
-          >客户信息</el-button>
+          >客户信息</el-button>-->
           <el-button
             size="mini"
             type="text"

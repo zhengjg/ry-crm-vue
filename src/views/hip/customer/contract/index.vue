@@ -140,10 +140,10 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="客户名称" prop="customerName">
+         <!--<el-form-item label="客户名称" prop="customerName">
           <el-input v-model="form.customerName" :disabled="!!customerName" placeholder="请输入客户名称" />
         </el-form-item>
-        <!--<el-form-item label="客户Id" prop="customerId">
+       <el-form-item label="客户Id" prop="customerId">
           <el-input v-model="form.customerId" placeholder="请输入客户Id" />
         </el-form-item>-->
         <el-form-item label="收货地址" prop="deliveryAddress">
@@ -153,7 +153,7 @@
           <el-input v-model="form.taxRate" placeholder="请输入税率" />
         </el-form-item>
         <el-form-item label="合同总价" prop="totalPrice">
-          <el-input v-model="form.totalPrice" placeholder="请输入合同总价" />
+          <el-input v-model="form.totalPrice" :disabled="true" placeholder="请输入合同总价" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
@@ -408,8 +408,34 @@ export default {
     },
     customerName() {
       return store.getters.currentCustomer.name;
+    },
+    getTotalPrice() {
+      const total = 0;
+      if(this.productList.length > 0) {
+        this.productList.forEach((row) => {
+          if(row.num &&row.price) {
+            total += row.num*row.price
+          }
+        });
+      }
+      this.form.totalPrice = total;
+      return total
     }
-
+  },
+  watch: {
+    hipContractOrderList(newValue,oldValue) {
+      console.log('hipContractOrderList',newValue)
+      let total = 0;
+      if(newValue && newValue.length > 0) {
+        newValue.forEach((row) => {
+          if(row.unitPrice && row.quantity) {
+            total += row.unitPrice*row.quantity
+          }
+        });
+      }
+      console.log('total',total)
+      this.form.totalPrice = total;
+    }
   },
   created() {
     if(this.currentCustomer && this.currentCustomer.name) {
@@ -438,7 +464,7 @@ export default {
     },
     getProductList() {
       this.productLoading = true;
-      listProduct(this.queryProductForm).then(response => {
+      listProduct(this.productParams).then(response => {
         this.productList = response.rows;
         this.total = response.total;
         this.productLoading = false;
@@ -482,7 +508,7 @@ export default {
     },
     /** 产品重置按钮操作 */
     resetProductQuery() {
-      this.resetForm("queryForm");
+      this.resetForm("queryProductForm");
       this.handlePruductQuery();
     },
     handleSelectPruducts() {
