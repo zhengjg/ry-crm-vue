@@ -18,7 +18,7 @@
           </router-link>
         </el-menu-item>
         <el-menu-item index="3">
-          <router-link to="/hip/customer/contract">
+          <router-link to="/hip/sales/quotation">
             报价单
           </router-link>
         </el-menu-item>
