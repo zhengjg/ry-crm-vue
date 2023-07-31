@@ -275,3 +275,14 @@
 	position: relative;
 	float: right;
 }
+
+.nav-el-dialog {
+  .el-dialog__body {
+    padding-top: 10px;
+  }
+}
+.el-menu-customer.el-menu--horizontal > .el-menu-item {
+	height: 50px;
+	line-height: 50px;
+
+}

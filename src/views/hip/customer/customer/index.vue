@@ -152,6 +152,13 @@
       <el-table-column label="业务员" align="center" prop="salesMan" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
+          <!--<el-button
+            size="mini"
+            type="text"
+            icon="el-icon-setting"
+            @click="handleNav(scope.row)"
+            v-hasPermi="['customer:customer:edit']"
+          >客户信息</el-button>-->
           <el-button
             size="mini"
             type="text"
@@ -325,10 +332,77 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+    <!-- 添加或修改新建客户对话框 -->
+    <el-dialog  :visible.sync="openNav" width="700px" class="nav-el-dialog" append-to-body>
+      <el-row :gutter="0" class="col-nav">
+        <el-col :span="8">
+          <div class="nav-container" @click="openContacts">
+            <i  class="el-icon-s-custom"></i>
+            <span>联系人</span>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="nav-container" @click="openContract">
+            <i  class="el-icon-s-management"></i>
+            <span>合同订单</span>
+          </div>
+        </el-col>
+        <el-col :span="8"> 
+          <div class="nav-container">
+            <i  class="el-icon-s-finance"></i>
+            <span>报价单</span>
+          </div>
+        </el-col>
+      </el-row>
+      <el-descriptions class="desc-margin-bottom"  :column="2"  border>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-user"></i>
+            用户名
+          </template>
+          {{openRow.name}}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-mobile-phone"></i>
+            手机号
+          </template>
+          {{openRow.recvPhone}}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            联系地址
+          </template>
+          {{openRow.address}}
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
+<style lang="scss" scoped>
 
+.desc-margin-bottom {
+  margin-top: 20px;
+}
+.col-nav {
+  margin: 0 10px;
+
+}
+.nav-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  i {
+    font-size: 22px;
+    margin-bottom: 3px;
+  }
+}
+</style>
 <script>
+import store from "@/store";
 import { listCustomer, getCustomer, delCustomer, addCustomer, updateCustomer } from "@/api/customer/customer";
 
 export default {
@@ -354,6 +428,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      openNav: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -382,6 +457,11 @@ export default {
         ],
       }
     };
+  },
+  computed: {
+    openRow() {
+      return store.getters.currentCustomer;
+    } 
   },
   created() {
     this.getList();
@@ -466,6 +546,24 @@ export default {
       this.ids = selection.map(item => item.customerId)
       this.single = selection.length!==1
       this.multiple = !selection.length
+    },
+    // 处理导航面板
+    handleNav(row) {
+      console.log('row',row)
+      this.openNav = true;
+      //this.openRow = row;
+      store.commit('SET_CUSTOMER', row);
+
+    },
+    // 联系人
+    openContacts() {
+      this.openNav = false;
+      this.$router.push({ path: '/hip/customer/contacts' })
+    },
+    // 处理报价单 
+    openContract() {
+      this.openNav = false;
+      this.$router.push({ path: '/hip/customer/contract' })
     },
     /** 新增按钮操作 */
     handleAdd() {
