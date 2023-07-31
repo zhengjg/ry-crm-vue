@@ -128,14 +128,14 @@
         <el-form-item label="合同编号" prop="contractNo">
           <el-input v-model="form.contractNo" :disabled="!!form.contractNo" placeholder="请输入合同编号" />
         </el-form-item>
-        <el-form-item label="供应方" prop="signAddress">
+        <el-form-item label="供应方" prop="supplier_id">
          <!-- <el-input v-model="form.signAddress" placeholder="请输入签署地点" />-->
-          <el-select v-model="form.signAddress" style="width: 100%;" clearable placeholder="请选择">
+          <el-select v-model="form.supplier_id" style="width: 100%;" clearable placeholder="请选择">
             <el-option
               v-for="item in signAddressList"
-              :key="item.deptName"
+              :key="item.deptId"
               :label="item.deptName"
-              :value="item.deptName">
+              :value="item.deptId">
             </el-option>
           </el-select>
         </el-form-item>
@@ -612,6 +612,7 @@ export default {
       this.open = true;
       this.title = "添加合同";
       this.form.customerName = this.customerName;
+      this.form.customerId = this.currentCustomer.customerId;
       const no = await getContractNo();
       if(no) {
         this.form.contractNo = no;
