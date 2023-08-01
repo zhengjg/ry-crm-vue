@@ -499,7 +499,6 @@ export default {
           }
         });
         return sums;
-
     },
     /** 搜索产品按钮操作 */
     handlePruductQuery() {
@@ -547,8 +546,6 @@ export default {
           type: 'warning'
         });
       }
-     
-
     },
     validateNum(value) {
       console.log(value)
@@ -601,8 +598,8 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
-     // 产品多选框选中数据
-     handleProductSelectionChange(selection) {
+    // 产品多选框选中数据
+    handleProductSelectionChange(selection) {
       console.log("products",selection)
       this.selectProducts = selection;
     },
@@ -634,6 +631,8 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           this.form.hipContractOrderList = this.hipContractOrderList;
+          this.form.customerName = this.customerName;
+          this.form.customerId = this.currentCustomer.customerId;
           if (this.form.contractId != null) {
             updateContract(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
