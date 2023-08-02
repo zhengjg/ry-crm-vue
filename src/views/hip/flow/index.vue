@@ -4,7 +4,7 @@
       <el-form-item label="流程名" prop="flowName">
         <el-input
           v-model="queryParams.flowName"
-          placeholder="请输入流程名"
+          placeholder="流程名"
           clearable
           @keyup.enter.native="handleQuery"
         />
